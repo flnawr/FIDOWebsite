@@ -1,0 +1,28 @@
+{
+  "name": "bachelor-study",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "dependencies": {
+    "@fidm/x509": "^1.2.1",
+    "base64url": "^3.0.1",
+    "body-parser": "^1.19.0",
+    "cbor": "^5.1.0",
+    "cookie-parser": "^1.4.5",
+    "cookie-session": "^1.4.0",
+    "express": "^4.17.1",
+    "elliptic": "^6.5.3",
+    "iso-3166-1": "^2.0.1",
+    "node-rsa": "^1.1.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/flnawr/bachelorwebsite"
+  },
+  "private": true,
+  "author": "Florian Nawrath",
+  "bugs": {
+    "url": "https://github.com/flnawr/bachelorwebsite/issues"
+  },
+  "homepage": "https://github.com/flnawr/bachelorwebsite/#readme"
+}

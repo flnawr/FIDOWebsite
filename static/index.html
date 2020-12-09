@@ -1,0 +1,106 @@
+<!DOCTYPE HTML>
+<html lang="en">
+    <head>
+        <!-- Meta Tags -->
+        <meta http-equiv="content-type"    content="text/html; charset=utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="keywords"              content="Fido, Yubikey, Cybersecurity, CISPA, Bachelor, Study">
+        <meta name="viewport"              content="width=device-width, initial-scale=1">
+        <meta name="author"                content="Florian Nawrath">
+
+        <!-- Page Title -->
+        <title>Florian Nawrath - Bachelor Study</title>
+
+        <!-- Page Icon -->
+        <link rel="icon" sizes="64x64" href="./img/favicon.ico" type="image/ico"/>
+
+        <!-- CSS Files -->
+        <link rel="stylesheet" type="text/css" href="./css/bootstrap.min.css"/>
+        
+        <!-- JS Files -->
+        <script src="./js/jquery-3.2.1.min.js"      type="text/javascript"></script>
+        <script src="./js/bootstrap.min.js"         type="text/javascript"></script>
+        <script src="./js/logging.js"               type="text/javascript"></script>
+    </head>
+    <body>
+        <div class="container mt-5">
+            <div id="intro" class="jumbotron border border-success text-center">
+                <div class="container">
+                    <h3 class="text-success">Welcome to this study</h3>
+                    Below you will find two buttons, with each of them you can register either a security device or some other authentication device.
+                    Please click each of them and, if available, try to register your device.
+                    No worries, we will not keep those data.<br/>
+                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                        <strong>Cookies</strong> 
+                        This study creates cookies for this webpage. None of the data contained will be analyzed or saved on our site.<br/>
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    Thank you for participating!
+                </div>
+            </div>
+            <div id="task1" class="jumbotron border border-success">
+                <div class="container text-center">
+                    <h3 class="text-success">Task 1</h3>
+                    <p class="text-left text-muted">
+                        Please enter your mTurk Worker ID here.
+                        You can find it <a href="https://worker.mturk.com/tasks">on this page</a> in the top left corner.
+                    </p>
+                    <label for="username"></label>
+                    <input type="text" class="form-control" id="username" name="username" placeholder="mTurk Worker ID">
+                </div>
+            </div>
+            <div id="task2" class="jumbotron border border-success">
+                <div class="container text-center">
+                    <h3 class="text-success">Task 2</h3>
+                    <p class="text-left text-muted">
+                        Click on the button below. If you own a
+                        <a href="https://en.wikipedia.org/wiki/FIDO_Alliance">FIDO</a>-compatible security device (eg.
+                        <a href="https://en.wikipedia.org/wiki/YubiKey">Yubikey</a>, ...) please try to register it.
+                        Otherwise if you do not have such a device available please click the button anyway before
+                        proceeding.
+                    </p>
+                    <button type="button" id="seckey" onclick="isSecurityDeviceClicked=true;" class="btn btn-primary">
+                        Register Security Key
+                    </button>
+                </div>
+            </div>
+            <div id="task3" class="jumbotron border border-success">
+                <div class="container text-center">
+                    <h3 class="text-success">Task 3</h3>
+                    <p class="text-left text-muted">
+                        Click on the button below. If you own a
+                        <a href="https://en.wikipedia.org/wiki/FIDO_Alliance">FIDO</a>-compatible security device (eg.
+                        <a href="https://en.wikipedia.org/wiki/Windows_10#System_security">Windows Hello</a>, Fingerprint
+                        Sensor, ...) please try to register it. Otherwise if you do not have such a device available please
+                        click the button anyway before proceeding.
+                    </p>
+                    <button type="button" id="fingerprint" onclick="isFingerprintClicked=true;" class="btn btn-primary">
+                        Register Security Device
+                    </button>
+                </div>
+            </div>
+            <div id="finish" class="jumbotron border border-success">
+                <div class="container text-center">
+                    <h3 class="text-success">Finish</h3>
+                    <p class="text-left text-muted">
+                        Click on the "Finish" to submit the collected data or "Reset" to delete everything and start from
+                        scratch.<br/>
+                        <b>Hint: No credentials will be saved on the server!</b>
+                    </p>
+                    <button type="submit" onclick="sendLog()" class="btn btn-success">Finish</button>
+                    <div id="thankyou" class="alert alert-success alert-dismissible fade" role="alert">
+                        <h4 class="alert-heading">Thank you!</h4>
+                        Here, have a cookie!
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- JS Files -->
+        <script src="./js/base64url-arraybuffer.js" type="text/javascript"></script>
+        <script src="./js/utils.js"                 type="text/javascript"></script>
+        <script src="./js/webauthn.auth.js"         type="text/javascript"></script>
+    </body>
+</html>

@@ -1,0 +1,6 @@
+.data
+node_modules
+*~*.swp
+*.swo
+*.kate-swp
+.lock
