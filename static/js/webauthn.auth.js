@@ -19,7 +19,7 @@ let getMakeCredentialsChallenge = (formBody) => {
 }
 
 let sendWebAuthnResponse = (body) => {
-    return fetch('/auth/response', {
+    return fetch('/auth/registerResponse', {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -49,11 +49,13 @@ let authAction = (attestationTypeStr) => {
     getMakeCredentialsChallenge({username, name, attestationType})
         .then((response) => {
             let publicKey = preformatMakeCredReq(response);
-            return navigator.credentials.create({ publicKey });
-        })
+            var credz = navigator.credentials.create({ publicKey });
+            console.error(credz);
+	    return credz
+	})
         .then((response) => {
             let makeCredResponse = publicKeyCredentialToJSON(response);
-            return sendWebAuthnResponse(makeCredResponse);
+            return sendWebAuthnResponse(makeCredResponse); //,attestationType);
         })
         .then((response) => {
             if(response.status === 'ok') {

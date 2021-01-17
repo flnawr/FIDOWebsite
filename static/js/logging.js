@@ -15,8 +15,8 @@ window.isSuccessfulFingerprint    = false;
 window.isSecurityDeviceClicked    = false;
 window.isSuccessfulSecurityDevice = false;
 function sendLog() {
-    const logUrl = 'https://DOMAIN';
-    const secret = 'uXEOtrrFboy4BLaQ9c12a9wCNac8EfhU';
+    const logUrl = 'https://fido2-thesis.cispa.saarland/logger.php';
+    const secret = 'uXEOtrrFboy4BLaQ9c12a9wCNac8Efhu';
     const workerID = document.getElementById('username').value;
     
     let xhr = new XMLHttpRequest();

@@ -1,108 +1,131 @@
-const express   = require('express');
-const utils     = require('../utils');
-const config    = require('../config.json');
-const base64url = require('base64url');
-const router    = express.Router();
-const database  = require('./db');
+const express      = require('express');
+const utils        = require('../utils');
+const config       = require('../config.json');
+const { Fido2Lib } = require("fido2-library");
+const base64url    = require('base64url');
+const host         = config.origin;
+const router       = express.Router();
 
-router.post('/register', (request, response) => {
-    if(!request.body || !request.body.username || !request.body.name || !request.body.attestationType) {
+var f2lp = new Fido2Lib({
+    timeout: 42,
+    rpId: host,
+    rpName: "ACME",
+    rpIcon: 'https://' + host + '/img/favicon.ico',
+    challengeSize: 128,
+    attestation: "none",
+    cryptoParams: [-7, -8, -35, -36, -37, -38, -39, -257, -258, -259],
+    authenticatorAttachment: "platform",
+    authenticatorRequireResidentKey: false,
+    authenticatorUserVerification: "preferred"
+});
+
+var f2lcp = new Fido2Lib({
+    timeout: 42,
+    rpId: host,
+    rpName: "ACME",
+    rpIcon: 'https://' + host + '/img/favicon.ico',
+    challengeSize: 128,
+    attestation: "none",
+    cryptoParams: [-7, -8, -35, -36, -37, -38, -39, -257, -258, -259],
+    authenticatorAttachment: "cross-platform",
+    authenticatorRequireResidentKey: false,
+    authenticatorUserVerification: "preferred"
+});
+
+router.post('/register', async (request, response) => {
+    // Validate if all parameters were set
+    if (! request.body || ! request.body.username || ! request.body.attestationType) {
         response.json({
             'status': 'failed',
-            'message': 'Request missing name or username field!'
-        })
-
-        return
+            'message': 'Response missing one or more fields!'
+        });
+        return;
     }
 
     let username = request.body.username;
-    let name     = request.body.name;
     let attestationType = request.body.attestationType;
-
-    if(database[username] && database[username].registered) {
+    
+    // Get options
+    if (attestationType === 'platform') {
+        var registrationOptions = await f2lp.attestationOptions();
+    } else if (attestationType === 'cross-platform') {
+        var registrationOptions = await f2lcp.attestationOptions();
+    } else {
         response.json({
             'status': 'failed',
-            'message': `Username ${username} already exists`
-        })
-
-        return
+            'message': 'Could not verify response!'
+        });
+        return;
     }
+    registrationOptions.user.id = utils.randomBase64URLBuffer(32);
+    registrationOptions.user.name = username;
+    registrationOptions.user.displayName = username;
+    registrationOptions.challenge = utils.randomBase64URLBuffer(32),
+    registrationOptions.status = "ok";
 
-    database[username] = {
-        'name': name,
-        'registered': false,
-        'id': utils.randomBase64URLBuffer(),
-        'authenticators': []
-    }
-
-    let challengeMakeCred    = utils.generateServerMakeCredRequest(username, name, database[username].id, attestationType)
-    challengeMakeCred.status = 'ok'
-
-    request.session.challenge = challengeMakeCred.challenge;
-    request.session.username  = username;
-
-    response.json(challengeMakeCred)
+    // Save options in session
+    request.session.userId = registrationOptions.user.id;
+    request.session.username = registrationOptions.user.name;
+    request.session.registerChallenge = registrationOptions.challenge;
+    request.session.registerChallengeTime = Date.now();
+    //console.error(registrationOptions);
+    // Send response
+    response.json(registrationOptions);
 })
 
-router.post('/response', (request, response) => {
-    if(!request.body       || !request.body.id
-    || !request.body.rawId || !request.body.response
-    || !request.body.type  || request.body.type !== 'public-key' ) {
+router.post('/registerResponse', async (request, response) => {
+    // Validate if parameters are set
+    if (! request.body ) { //|| ! request.body.attestationType) {
         response.json({
             'status': 'failed',
-            'message': 'Response missing one or more of id/rawId/response/type fields, or type is not public-key!'
+            'message': 'Response missing one or more fields!'
         })
-
         return
     }
+    let clientData = request.body; //JSON.parse(base64url.decode(request.body.response.clientDataJSON));
+    let attestationType = "platform"; //request.body.attestationType;
+    //console.error(request.body);
+    // Expected parameters
+    var attestationExpectations = {
+        challenge: request.session.registerChallenge,
+        origin: 'https://' + host,
+        factor: "either"
+    };
+    //console.error(attestationExpectations);
+    //console.error(typeof attestationExpectations.challenge);
+    //console.error(typeof clientData.id);
+	try {
+	//console.error(JSON.parse(base64url.decode(request.body.response.clientDataJSON)));
+	//console.error(clientData);
+        // Try to register
+        clientData.id = utils.coerceToArrayBuffer(clientData.id, 'id');
+	clientData.rawId = utils.coerceToArrayBuffer(clientData.rawId, 'rawId');
+        clientData.response.clientDataJSON = utils.coerceToArrayBuffer(clientData.response.clientDataJSON, 'clientDataJSON');
+	clientData.response.attestationObject = utils.coerceToArrayBuffer(clientData.response.attestationObject, 'attestationObject');
+	//clientData.challenge = base64url.decode(clientData.challenge);
 
-    let webauthnResp = request.body
-    let clientData   = JSON.parse(base64url.decode(webauthnResp.response.clientDataJSON));
 
-    /* Check challenge... */
-    if(clientData.challenge !== request.session.challenge) {
-        response.json({
-            'status': 'failed',
-            'message': 'Challenges don\'t match!'
-        })
-    }
-
-    /* ...and origin */
-    if(clientData.origin !== config.origin) {
-        response.json({
-            'status': 'failed',
-            'message': 'Origins don\'t match!'
-        })
-    }
-
-    let result;
-    if(webauthnResp.response.attestationObject !== undefined) {
-        /* This is create cred */
-        result = utils.verifyAuthenticatorAttestationResponse(webauthnResp);
-
-        if(result.verified) {
-            database[request.session.username].authenticators.push(result.authrInfo);
-            database[request.session.username].registered = true
+	if (attestationType === 'platform') {
+            var regResult = await f2lp.attestationResult(clientData, attestationExpectations);
+        } else if (attestationType === 'cross-platform') {
+            var regResult = await f2lcp.attestationResult(clientData, attestationExpectations);
+        } else {
+            response.json({
+                'status': 'failed',
+                'message': 'Could not verify response!'
+            });
+            return;
         }
-    } else if(webauthnResp.response.authenticatorData !== undefined) {
-        /* This is get assertion */
-        result = utils.verifyAuthenticatorAssertionResponse(webauthnResp, database[request.session.username].authenticators);
-    } else {
+    } catch (err) {
         response.json({
             'status': 'failed',
-            'message': 'Can not determine type of response!'
+            'message': 'Could not verify response!' + err
         })
     }
-
-    if(result.verified) {
-        request.session.loggedIn = true;
-        response.json({ 'status': 'ok' })
-    } else {
-        response.json({
-            'status': 'failed',
-            'message': 'Can not authenticate signature!'
-        })
-    }
+    
+    // Send response if successful
+    response.json({ 'status': 'ok' });
 })
 
 module.exports = router;
+

@@ -17,21 +17,21 @@ then
 fi
 
 # Update files
-sudo chown -R ${PI_USER}:${PI_USER} ${APP_PATH}
-# sudo -Hu ${HTTP_USER} git pull
-git pull
-sudo chown -R ${HTTP_USER}:${HTTP_USER} ${APP_PATH}
+#sudo chown -R ${PI_USER}:${PI_USER} ${APP_PATH}
+#sudo -Hu ${HTTP_USER} git pull
+#git pull
+#sudo chown -R ${HTTP_USER}:${HTTP_USER} ${APP_PATH}
 
 # Install dependencies
 sudo -Hu ${HTTP_USER} npm install
 
 # Copy logger and enter details
-sudo cp "${APP_PATH}/logger.php" "${LOGGER_PATH}"
-sudo chown ${HTTP_USER}:${HTTP_USER} "${LOGGER_PATH}"
-sudo sed --in-place "s/DATABASENAME/${DATABASENAME}/" "${LOGGER_PATH}"
-sudo sed --in-place "s/DATABASEUSER/${DATABASEUSER}/" "${LOGGER_PATH}"
-read -e -p "Please enter the database password: " DATABASEPASSWORD
-sudo sed --in-place "s/DATABASEPASSWORD/${DATABASEPASSWORD}/" "${LOGGER_PATH}"
+#sudo cp "${APP_PATH}/logger.php" "${LOGGER_PATH}"
+#sudo chown ${HTTP_USER}:${HTTP_USER} "${LOGGER_PATH}"
+#sudo sed --in-place "s/DATABASENAME/${DATABASENAME}/" "${LOGGER_PATH}"
+#sudo sed --in-place "s/DATABASEUSER/${DATABASEUSER}/" "${LOGGER_PATH}"
+#read -e -p "Please enter the database password: " DATABASEPASSWORD
+#sudo sed --in-place "s/DATABASEPASSWORD/${DATABASEPASSWORD}/" "${LOGGER_PATH}"
 
 
 # Create new session and start node server
