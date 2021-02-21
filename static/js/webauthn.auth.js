@@ -50,8 +50,7 @@ let authAction = (attestationTypeStr) => {
         .then((response) => {
             let publicKey = preformatMakeCredReq(response);
             var credz = navigator.credentials.create({ publicKey });
-            console.error(credz);
-	    return credz
+            return credz
 	})
         .then((response) => {
             let makeCredResponse = publicKeyCredentialToJSON(response);
@@ -61,16 +60,33 @@ let authAction = (attestationTypeStr) => {
             if(response.status === 'ok') {
                 if (attestationType === 'cross-platform') {
                     window.isSuccessfulSecurityDevice = true;
+		    document.getElementById('mSec').className = "mt-2 bg-success border border-dark";
+		    document.getElementById('mSec').textContent = "You successfully registered your Security Key";
+		    //alert('You successfully registered your Security Key');
                 }
                 if (attestationType === 'platform') {
                     window.isSuccessfulFingerprint = true;
+		    document.getElementById('mDev').className = "mt-2 bg-success border border-dark";
+		    document.getElementById('mDev').classContent = "You successfully registered your Security Device";
+		    //alert('You successfully registered your Security Device');
                 }
             } else {
-                alert(`Server responded with error. The message is: ${response.message}`);
+		throw "Auth fail";
+		//alert("Registration was not successfull. This may either be, because your device does not support this form of authentication or because you cancelled the process.");
+	        //alert(`Server responded with error. The message is: ${response.message}`);
             }
         })
         .catch((error) => {
-            alert(error);
+	    if (attestationType === 'cross-platform') {
+                  document.getElementById('mSec').className = "mt-2 bg-danger border border-dark";
+                  document.getElementById('mSec').textContent = "Registration was not successfull. This may either be, because your device does not support this form of authentication or because you cancelled the process.";
+                }
+            if (attestationType === 'platform') {
+                  document.getElementById('mDev').className = "mt-2 bg-danger border border-dark";
+                  document.getElementById('mDev').textContent = "Registration was not successfull. This may either be, because your device does not support this form of authentication or because you cancelled the process.";
+                }
+
+            //alert(error);
         });
 }
 

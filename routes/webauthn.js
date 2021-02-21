@@ -83,7 +83,7 @@ router.post('/registerResponse', async (request, response) => {
         return
     }
     let clientData = request.body; //JSON.parse(base64url.decode(request.body.response.clientDataJSON));
-    let attestationType = "platform"; //request.body.attestationType;
+    let attestationType = request.body.attestationType;
     //console.error(request.body);
     // Expected parameters
     var attestationExpectations = {

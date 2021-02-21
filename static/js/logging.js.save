@@ -1,7 +1,7 @@
 "use strict;"
 
 /**
- * Return a string containing the current browser's name,version and the platform.
+ * Return a string containing the current browser's name and version.
  */
 function getBrowser()  {
     return navigator.appName.concat('/', navigator.appCodeName, ' ', navigator.appVersion);
@@ -25,12 +25,7 @@ function sendLog() {
             document.getElementById('thankyou').className += ' show';
             var resultElem = document.createTextNode(xhr.responseText);
 	    //resultElem.innerHtml = xhr.responseText;
-            document.getElementById('code').appendChild(resultElem);
-	    if (xhr.responseText.includes('Error:')){
-            document.getElementById('thankyou').className = 'alert alert-danger fade show';
-	    var elemtmp = document.getElementById('surveylink');
-	    elemtmp.parentNode.removeChild(elemtmp);
-	    }
+            document.getElementById('thankyou').appendChild(resultElem);
         }
     }
     xhr.open("POST", logUrl, true);
@@ -42,8 +37,7 @@ function sendLog() {
         is_securityDevice_clicked:    window.isSecurityDeviceClicked.toString(),
         is_successful_securitydevice: window.isSuccessfulSecurityDevice.toString(),
         platform:                     getBrowser(),
-        secret:                       secret,
-	hitId:			      findGetParameter('hitId')
+        secret:                       secret
     });
     xhr.send(params);
     var element = document.getElementById('fin');
@@ -52,21 +46,9 @@ function sendLog() {
 }
 
 function showfinish() {
-    let name            = this.username.value;
+    let name  
 
-   if (window.isFingerprintClicked && window.isSecurityDeviceClicked && name) { 
+   if (window.isFingerprintClicked && window.isSecurityDeviceClicked) { 
 	document.getElementById('finish').style.visibility = 'visible';
   }
-}
-
-
-function findGetParameter(parameterName) {
-    var result = null,
-        tmp = [];
-    var items = location.search.substr(1).split("&");
-    for (var index = 0; index < items.length; index++) {
-        tmp = items[index].split("=");
-        if (tmp[0] === parameterName) result = decodeURIComponent(tmp[1]);
-    }
-    return result;
 }
