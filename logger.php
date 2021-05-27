@@ -18,7 +18,7 @@ function getRandomString($length) {
 function validate_data($params = null) {
     $secret = 'uXEOtrrFboy4BLaQ9c12a9wCNac8EfhU';
     $hitId_desktop = [];
-    $hitId_mobile = ["3DIIW4IV8P1V8BXGCEGFMDVL75S4IA"];
+    $hitId_mobile = [];
 
     
     if (empty($params)) {
